@@ -1,5 +1,5 @@
-.pbmn
-.scorer
+*.pbmn
+*.scorer
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
