@@ -1,4 +1,5 @@
 models/
+audio/
 *.wav
 
 # Byte-compiled / optimized / DLL files
