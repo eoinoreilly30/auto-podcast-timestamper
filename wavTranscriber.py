@@ -46,12 +46,12 @@ def stt(ds, audio, fs):
     segment_length = len(audio) * (1 / fs)
 
     # Run Deepspeech
-    logging.debug('Running inference...')
+    # logging.debug('Running inference...')
     inference_start = timer()
     output = ds.stt(audio)
     inference_end = timer() - inference_start
     inference_time += inference_end
-    logging.debug('Inference took %0.3fs for %0.3fs audio file.' % (inference_end, segment_length))
+    # logging.debug('Inference took %0.3fs for %0.3fs audio file.' % (inference_end, segment_length))
 
     return [output, inference_time, segment_length]
 
@@ -95,6 +95,6 @@ def vad_segment_generator(wav_data, aggressiveness):
     vad = webrtcvad.Vad(int(aggressiveness))
     frames = wavSplit.frame_generator(30, audio, sample_rate)
     frames = list(frames)
-    segments = wavSplit.vad_collector(sample_rate, 30, 300, vad, frames)
+    segment_generator = wavSplit.vad_collector(sample_rate, 30, 300, vad, frames)
 
-    return segments, sample_rate, audio_length
+    return segment_generator, sample_rate, audio_length
