@@ -35,8 +35,8 @@ def write_wave(path, audio, sample_rate):
 
 class Frame(object):
     """Represents a "frame" of audio data."""
-    def __init__(self, bytes, timestamp, duration):
-        self.bytes = bytes
+    def __init__(self, bytedata, timestamp, duration):
+        self.bytes = bytedata
         self.timestamp = timestamp
         self.duration = duration
 
@@ -70,7 +70,7 @@ def vad_collector(sample_rate, frame_duration_ms,
     When more than 90% of the frames in the window are voiced (as
     reported by the VAD), the collector triggers and begins yielding
     audio frames. Then the collector waits until 90% of the frames in
-    the window are unvoiced to detrigger.
+    the window are unvoiced to de-trigger.
 
     The window is padded at the front and back to provide a small
     amount of silence or the beginnings/endings of speech around the
