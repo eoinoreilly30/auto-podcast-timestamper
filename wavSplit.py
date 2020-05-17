@@ -35,6 +35,7 @@ def write_wave(path, audio, sample_rate):
 
 class Frame(object):
     """Represents a "frame" of audio data."""
+
     def __init__(self, bytedata, timestamp, duration):
         self.bytes = bytedata
         self.timestamp = timestamp
@@ -131,4 +132,3 @@ def vad_collector(sample_rate, frame_duration_ms,
     # yield it.
     if voiced_frames:
         yield b''.join([f.bytes for f in voiced_frames])
-
