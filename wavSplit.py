@@ -3,22 +3,21 @@ import contextlib
 import wave
 
 
-def read_wave(path):
+def read_wave(wf):
     """Reads a .wav file.
 
-    Takes the path, and returns (PCM audio data, sample rate).
+    Takes the wav data, and returns (PCM audio data, sample rate).
     """
-    with contextlib.closing(wave.open(path, 'rb')) as wf:
-        num_channels = wf.getnchannels()
-        assert num_channels == 1
-        sample_width = wf.getsampwidth()
-        assert sample_width == 2
-        sample_rate = wf.getframerate()
-        assert sample_rate in (8000, 16000, 32000)
-        frames = wf.getnframes()
-        pcm_data = wf.readframes(frames)
-        duration = frames / sample_rate
-        return pcm_data, sample_rate, duration
+    num_channels = wf.getnchannels()
+    assert num_channels == 1
+    sample_width = wf.getsampwidth()
+    assert sample_width == 2
+    sample_rate = wf.getframerate()
+    assert sample_rate in (8000, 16000, 32000)
+    frames = wf.getnframes()
+    pcm_data = wf.readframes(frames)
+    duration = frames / sample_rate
+    return pcm_data, sample_rate, duration
 
 
 def write_wave(path, audio, sample_rate):
@@ -60,8 +59,7 @@ def frame_generator(frame_duration_ms, audio, sample_rate):
         offset += n
 
 
-def vad_collector(sample_rate, frame_duration_ms,
-                  padding_duration_ms, vad, frames):
+def vad_collector(sample_rate, frame_duration_ms, padding_duration_ms, vad, frames):
     """Filters out non-voiced audio frames.
 
     Given a webrtcvad.Vad and a source of audio frames, yields only

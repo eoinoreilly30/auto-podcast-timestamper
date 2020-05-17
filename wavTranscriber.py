@@ -89,9 +89,8 @@ Returns tuple of
 '''
 
 
-def vad_segment_generator(wavfile, aggressiveness):
-    logging.debug("Caught the wav file @: %s" % wavfile)
-    audio, sample_rate, audio_length = wavSplit.read_wave(wavfile)
+def vad_segment_generator(wav_data, aggressiveness):
+    audio, sample_rate, audio_length = wavSplit.read_wave(wav_data)
     assert sample_rate == 16000, "Only 16000Hz input WAV files are supported for now!"
     vad = webrtcvad.Vad(int(aggressiveness))
     frames = wavSplit.frame_generator(30, audio, sample_rate)
