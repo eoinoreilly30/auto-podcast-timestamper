@@ -36,14 +36,14 @@ Run Inference on input audio file
 @param fs: Sample rate of the input audio file
 
 @Retval:
-Returns a list [Inference, Inference Time, Audio Length]
+Returns a list [Inference, Inference Time]
 
 '''
 
 
 def stt(ds, audio, fs):
     inference_time = 0.0
-    audio_length = len(audio) * (1 / fs)
+    segment_length = len(audio) * (1 / fs)
 
     # Run Deepspeech
     logging.debug('Running inference...')
@@ -51,9 +51,9 @@ def stt(ds, audio, fs):
     output = ds.stt(audio)
     inference_end = timer() - inference_start
     inference_time += inference_end
-    logging.debug('Inference took %0.3fs for %0.3fs audio file.' % (inference_end, audio_length))
+    logging.debug('Inference took %0.3fs for %0.3fs audio file.' % (inference_end, segment_length))
 
-    return [output, inference_time]
+    return [output, inference_time, segment_length]
 
 
 '''

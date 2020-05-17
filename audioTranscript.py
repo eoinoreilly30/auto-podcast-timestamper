@@ -31,6 +31,6 @@ def transcribe(wavfile_path, model_dir, aggressiveness):
             # Run deepspeech on the chunk that just completed VAD
             logging.debug("Processing chunk %002d" % (i,))
             audio = np.frombuffer(segment, dtype=np.int16)
-            inference, time_taken, audio_length_1 = wavTranscriber.stt(deepspeech_object, audio, sample_rate)
+            inference, time_taken, segment_length = wavTranscriber.stt(deepspeech_object, audio, sample_rate)
             inference_time += time_taken
             logging.debug("Transcript: %s" % inference)
