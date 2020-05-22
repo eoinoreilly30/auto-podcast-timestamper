@@ -3,7 +3,6 @@ import sys
 import os
 import logging
 import wave
-
 import numpy as np
 import wavTranscriber
 

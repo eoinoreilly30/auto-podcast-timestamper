@@ -2,6 +2,7 @@ models/
 audio-examples/
 .idea/
 *.wav
+summary-runtime-files/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
