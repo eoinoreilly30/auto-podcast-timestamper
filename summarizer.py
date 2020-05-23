@@ -10,7 +10,6 @@ logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 def tokenize(input_string, output_file):
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     tokens = tokenizer.tokenize(input_string)
-    # fix_apostrophes = ["##" + x if x == "'" else x for x in tokens]  # TODO: fix s after apostrophe too
     line = " ".join(tokens)
     line = '{}\n'.format(line)
 
@@ -35,7 +34,7 @@ def preprocess_input(input_prefix, prophet_net_path, preprocessed_files_dir, wor
         subprocess.check_output(command)
         logging.debug("successfully tokenized")
     except subprocess.CalledProcessError as err:
-        logging.debug("ERROR: return code " + str(err.returncode) + ", output: " + str(err.output))
+        logging.error("return code " + str(err.returncode) + ", output: " + str(err.output))
 
 
 def generate_summary(prophet_net_path, preprocessed_files_dir, output_filename, model_path, length_penalty):
@@ -49,25 +48,25 @@ def generate_summary(prophet_net_path, preprocessed_files_dir, output_filename, 
                         "--num-workers", "4",
                         "--lenpen", str(length_penalty)]
 
-    extract_result_command = ["grep", "^H", output_filename,
-                              "|", "cut", "-c", "3-",
-                              "|", "sort", "-n",
-                              "|", "cut", "-f3-",
-                              "|", "sed", '"s/ ##//g"']
+    grep = ["grep", "^H", output_filename]
+    cut = ["cut", "-c", "3-"]
+    sort = ["sort", "-n"]
+    cut2 = ["cut", "-f3-"]
+    sed = ["sed", '"s/ ##//g"']
 
-    generate_command_result = ''
     try:
-        generate_command_result = subprocess.check_output(generate_command)
+        with open(output_filename, "w") as out:
+            subprocess.check_call(generate_command, stdout=out)
         logging.debug("successfully generated unparsed summary")
     except subprocess.CalledProcessError as err:
-        logging.debug("ERROR: return code " + str(err.returncode) + ", output: " + str(err.output))
+        logging.error("return code " + str(err.returncode) + ", output: " + str(err.output))
 
     try:
         result = subprocess.check_output(extract_result_command)
         logging.debug("successfully parsed summary")
         return result
     except subprocess.CalledProcessError as err:
-        logging.debug("ERROR: return code " + str(err.returncode) + ", output: " + str(err.output))
+        logging.error("return code " + str(err.returncode) + ", output: " + str(err.output))
 
 
 def summarize(input_string):
