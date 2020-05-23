@@ -1,7 +1,7 @@
 import glob
 import webrtcvad
 import logging
-import wavSplit
+import split
 from deepspeech import Model
 from timeit import default_timer as timer
 
@@ -90,11 +90,11 @@ Returns tuple of
 
 
 def vad_segment_generator(wav_data, aggressiveness):
-    audio, sample_rate, audio_length = wavSplit.read_wave(wav_data)
+    audio, sample_rate, audio_length = split.read_wave(wav_data)
     assert sample_rate == 16000, "Only 16000Hz input WAV files are supported for now!"
     vad = webrtcvad.Vad(int(aggressiveness))
-    frames = wavSplit.frame_generator(30, audio, sample_rate)
+    frames = split.frame_generator(30, audio, sample_rate)
     frames = list(frames)
-    segment_generator = wavSplit.vad_collector(sample_rate, 30, 300, vad, frames)
+    segment_generator = split.vad_collector(sample_rate, 30, 300, vad, frames)
 
     return segment_generator, sample_rate, audio_length
