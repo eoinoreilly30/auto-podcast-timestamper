@@ -39,8 +39,7 @@ def preprocess_input(input_prefix, prophet_net_path, preprocessed_files_dir, wor
 
 
 def generate_summary(prophet_net_path, preprocessed_files_dir, output_filename, model_path, length_penalty):
-    generate_command = ["bash", "-c",
-                        "fairseq-generate", preprocessed_files_dir,
+    generate_command = ["fairseq-generate", preprocessed_files_dir,
                         "--path", model_path,
                         "--user-dir", prophet_net_path + "prophetnet",
                         "--task", "translation_prophetnet",
@@ -48,8 +47,7 @@ def generate_summary(prophet_net_path, preprocessed_files_dir, output_filename, 
                         "--gen-subset", "test",
                         "--beam", "4",
                         "--num-workers", "4",
-                        "--lenpen", str(length_penalty),
-                        ">", output_filename]
+                        "--lenpen", str(length_penalty)]
 
     extract_result_command = ["grep", "^H", output_filename,
                               "|", "cut", "-c", "3-",
@@ -57,8 +55,9 @@ def generate_summary(prophet_net_path, preprocessed_files_dir, output_filename, 
                               "|", "cut", "-f3-",
                               "|", "sed", '"s/ ##//g"']
 
+    generate_command_result = ''
     try:
-        subprocess.check_output(generate_command)
+        generate_command_result = subprocess.check_output(generate_command)
         logging.debug("successfully generated unparsed summary")
     except subprocess.CalledProcessError as err:
         logging.debug("ERROR: return code " + str(err.returncode) + ", output: " + str(err.output))
