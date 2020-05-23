@@ -1,6 +1,7 @@
 import logging
 import subprocess
 import sys
+import os
 
 from pytorch_transformers import BertTokenizer
 
@@ -13,71 +14,27 @@ def tokenize(input_string, output_file):
     line = " ".join(tokens)
     line = '{}\n'.format(line)
 
-    with open(output_file, 'w', encoding='utf-8') as src:
+    with open(output_file + ".src", 'w', encoding='utf-8') as src:
         src.write(line)
 
-
-def preprocess_input(input_prefix, prophet_net_path, preprocessed_files_dir, workers):
-    command = ["fairseq-preprocess",
-               "--no-progress-bar",
-               "--user-dir", prophet_net_path + "prophetnet",
-               "--task", "translation_prophetnet",
-               "--source-lang", "src",
-               "--target-lang", "tgt",
-               "--testpref", input_prefix,
-               "--destdir", preprocessed_files_dir,
-               "--srcdict", prophet_net_path + "vocab.txt",
-               "--tgtdict", prophet_net_path + "vocab.txt",
-               "--workers", str(workers)]
-
-    try:
-        subprocess.check_output(command)
-        logging.debug("successfully tokenized")
-    except subprocess.CalledProcessError as err:
-        logging.error("return code " + str(err.returncode) + ", output: " + str(err.output))
+    with open(output_file + ".tgt", 'w', encoding='utf-8') as tgt:
+        tgt.write("line")
 
 
-def generate_summary(prophet_net_path, preprocessed_files_dir, output_filename, model_path, length_penalty):
-    generate_command = ["fairseq-generate", preprocessed_files_dir,
-                        "--path", model_path,
-                        "--user-dir", prophet_net_path + "prophetnet",
-                        "--task", "translation_prophetnet",
-                        "--batch-size", "80",
-                        "--gen-subset", "test",
-                        "--beam", "4",
-                        "--num-workers", "4",
-                        "--lenpen", str(length_penalty)]
+def summarize(input_string, request_id):
+    request_dir = "./requests-files/" + request_id + "/"
+    tokenized = request_dir + "tokenized"
+    os.makedirs(request_dir, exist_ok=True)
+    model = "./models/cnndm.pt"
+    lenpen = "0.8"
 
-    grep = ["grep", "^H", output_filename]
-    cut = ["cut", "-c", "3-"]
-    sort = ["sort", "-n"]
-    cut2 = ["cut", "-f3-"]
-    sed = ["sed", '"s/ ##//g"']
+    tokenize(input_string, tokenized)
 
     try:
-        with open(output_filename, "w") as out:
-            subprocess.check_call(generate_command, stdout=out)
-        logging.debug("successfully generated unparsed summary")
-    except subprocess.CalledProcessError as err:
-        logging.error("return code " + str(err.returncode) + ", output: " + str(err.output))
-
-    try:
-        result = subprocess.check_output(extract_result_command)
-        logging.debug("successfully parsed summary")
-        return result
-    except subprocess.CalledProcessError as err:
-        logging.error("return code " + str(err.returncode) + ", output: " + str(err.output))
-
-
-def summarize(input_string):
-    prophetnet_path = "summary-runtime-files/"
-    preprocessed_files_dir = prophetnet_path + "preprocessed_input/"
-    tokenized_dir = preprocessed_files_dir + "tokenized"
-    unparsed_summary_path = preprocessed_files_dir + "summary.txt"
-    model_path = prophetnet_path + "models/cnndm.pt"
-    length_pen = 0.8
-
-    tokenize(input_string, tokenized_dir + ".src")
-    preprocess_input(tokenized_dir, prophetnet_path, preprocessed_files_dir, 20)
-
-    return generate_summary(prophetnet_path, preprocessed_files_dir, unparsed_summary_path, model_path, length_pen)
+        return subprocess.check_output(["./summarizer.sh",
+                                        tokenized,
+                                        request_dir,
+                                        model,
+                                        lenpen]).decode(sys.stdout.encoding).strip()
+    except subprocess.CalledProcessError as e:
+        logging.error("exit: " + str(e.returncode) + " output: " + str(e.output))
