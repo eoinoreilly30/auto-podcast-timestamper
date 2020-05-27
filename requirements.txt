@@ -1,3 +1,4 @@
+asgiref==3.2.7
 boto3==1.13.16
 botocore==1.16.16
 certifi==2020.4.5.1
@@ -6,6 +7,8 @@ chardet==3.0.4
 click==7.1.2
 Cython==0.29.19
 deepspeech==0.7.1
+Django==3.0.6
+django-environ==0.4.5
 docutils==0.15.2
 fairseq==0.9.0
 future==0.18.2
@@ -19,6 +22,7 @@ pycparser==2.20
 pydub==0.24.0
 python-dateutil==2.8.1
 pytorch-transformers==1.2.0
+pytz==2020.1
 regex==2020.5.14
 requests==2.23.0
 s3transfer==0.3.3
@@ -26,6 +30,7 @@ sacrebleu==1.4.9
 sacremoses==0.0.43
 sentencepiece==0.1.91
 six==1.15.0
+sqlparse==0.3.1
 torch==1.5.0+cpu
 tqdm==4.46.0
 typing==3.7.4.1
