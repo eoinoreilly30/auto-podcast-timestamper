@@ -4,12 +4,13 @@ import os
 import logging
 import wave
 import numpy as np
-import transcriber
+from projectsite.timestamper import transcriber
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 
-def transcribe(wavfile_path, model_dir, aggressiveness):
+# aggressiveness integer between 0-3
+def transcribe(wavfile_path, model_dir, aggressiveness=1):
     dir_name = os.path.expanduser(model_dir)
 
     output_graph, scorer = transcriber.resolve_models(dir_name)

@@ -1,7 +1,7 @@
 import glob
 import webrtcvad
 import logging
-import split
+from projectsite.timestamper import split
 from deepspeech import Model
 from timeit import default_timer as timer
 
