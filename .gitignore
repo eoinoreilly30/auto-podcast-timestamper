@@ -1,4 +1,4 @@
-models/
+projectsite/timestamper/models/
 audio-examples/
 .idea/
 *.wav

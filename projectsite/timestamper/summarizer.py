@@ -22,16 +22,16 @@ def tokenize(input_string, output_file):
 
 
 def summarize(input_string, request_id):
-    request_dir = "./requests-files/" + request_id + "/"
+    request_dir = "/dev/shm/" + request_id + "/"
     tokenized = request_dir + "tokenized"
     os.makedirs(request_dir, exist_ok=True)
-    model = "./models/cnndm.pt"
+    model = "projectsite/timestamper/models/cnndm.pt"
     lenpen = "0.8"
 
     tokenize(input_string, tokenized)
 
     try:
-        return subprocess.check_output(["./summarizer.sh",
+        return subprocess.check_output(["projectsite/timestamper/summarizer.sh",
                                         tokenized,
                                         request_dir,
                                         model,

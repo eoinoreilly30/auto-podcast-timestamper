@@ -5,7 +5,7 @@ output_dir=$2
 model=$3
 lenpen=$4
 
-prophetnet_path=./prophetnet/
+prophetnet_path=projectsite/timestamper/prophetnet/
 
 fairseq-preprocess \
 --no-progress-bar \
@@ -32,4 +32,7 @@ fairseq-generate "$output_dir" \
 > "$output_dir/unparsed_output.txt"
 
 summary=$(grep ^H "$output_dir/unparsed_output.txt" | cut -c 3- | sort -n | cut -f3- | sed "s/ ##//g")
+
+rm -rf "$output_dir"
+
 echo "$summary"
