@@ -21,17 +21,15 @@ def tokenize(input_string, output_file):
         tgt.write("line")
 
 
-def summarize(input_string, request_id):
-    request_dir = "./requests-files/" + request_id + "/"
+def summarize(input_string, request_dir, model_dir):
     tokenized = request_dir + "tokenized"
-    os.makedirs(request_dir, exist_ok=True)
-    model = "./models/cnndm.pt"
+    model = model_dir + "cnndm.pt"
     lenpen = "0.8"
 
     tokenize(input_string, tokenized)
 
     try:
-        return subprocess.check_output(["./summarizer.sh",
+        return subprocess.check_output(["projectsite/timestamper/summarizer.sh",
                                         tokenized,
                                         request_dir,
                                         model,
