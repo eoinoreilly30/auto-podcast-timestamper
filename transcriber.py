@@ -259,6 +259,7 @@ def transcribe(wavfile_path, model_dir):
         logging.info("Processing chunk %002d" % (i,))
         segment = np.frombuffer(segment, dtype=np.int16)
         inference, time_taken, segment_length = stt(deepspeech_object, segment, sample_rate)
+        logging.debug((timestamp, inference))
         sentences.append((timestamp, inference))
 
     return sentences

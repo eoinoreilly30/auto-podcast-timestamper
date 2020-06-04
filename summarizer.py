@@ -29,13 +29,15 @@ def summarize(input_string, request_dir, model_dir):
     tokenize(input_string, tokenized)
 
     try:
-        return subprocess.check_output(["./summarizer.sh",
-                                        tokenized,
-                                        request_dir,
-                                        model,
-                                        lenpen,
-                                        config.preprocessworkers,
-                                        config.generateworkers,
-                                        config.beam]).decode(sys.stdout.encoding).strip()
+        summary = subprocess.check_output(["./summarizer.sh",
+                                           tokenized,
+                                           request_dir,
+                                           model,
+                                           lenpen,
+                                           config.preprocessworkers,
+                                           config.generateworkers,
+                                           config.beam]).decode(sys.stdout.encoding).strip()
+        logging.debug('summary: ' + summary)
+        return summary
     except subprocess.CalledProcessError as e:
         logging.error("exit: " + str(e.returncode) + " output: " + str(e.output))
