@@ -1,4 +1,7 @@
 from __future__ import division
+
+import math
+
 from flask import Flask, request
 import logging
 import requests
@@ -8,8 +11,21 @@ import os
 import config
 import helpers
 
-logging.basicConfig(filename='logs.log', level=logging.DEBUG)
+logging.basicConfig(filename='log.log', level=logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+
 app = Flask(__name__)
+
+
+def setup_logger(name, log_file, level=logging.INFO):
+    handler = logging.FileHandler(log_file)
+    handler.setFormatter(formatter)
+
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+    logger.addHandler(handler)
+
+    return logger
 
 
 def download(url, output_filepath):
@@ -21,7 +37,8 @@ def download(url, output_filepath):
         file.write(response.content)
 
 
-def transcribe_and_summarize(wavfile_path, request_dir, model_dir, minute_increment=5):
+def transcribe_into_paragraphs(wavfile_path, model_dir, minute_increment):
+    logging.info('beginning transcription: ' + wavfile_path)
     sentences = transcriber.transcribe(wavfile_path, model_dir)
 
     increment = minute_increment * 60
@@ -35,10 +52,23 @@ def transcribe_and_summarize(wavfile_path, request_dir, model_dir, minute_increm
             increment += increment
             paragraph = ''
 
+    return paragraphs
+
+
+def summarize(paragraphs, request_dir, model_dir):
     logging.info('beginning summary: ' + request_dir)
     summary = []
     for paragraph in paragraphs:
-        summary.append(summarizer.summarize(paragraph, request_dir, model_dir))
+        # split paragraph up if too big
+        if len(paragraph) > config.summarizer_max_characters:
+            step = config.summarizer_max_characters
+            tmp_summary = ''
+            for i in range(0, len(paragraph), step):
+                tmp_summary += summarizer.summarize(paragraph[i:i + step], request_dir, model_dir)
+
+            summary.append(tmp_summary)
+        else:
+            summary.append(summarizer.summarize(paragraph, request_dir, model_dir))
 
     summary = [x.replace('[X_SEP]', '') for x in summary]
     return summary
@@ -70,6 +100,7 @@ def index():
     convert_and_resample(audio_filepath)
 
     download(download_link, audio_filepath)
-    transcribe_and_summarize(wav_filepath, request_dir, model_dir, minute_increment=5)
+    paragraphs = transcribe_into_paragraphs(wav_filepath, model_dir, minute_increment=5)
+    summary = summarize(paragraphs, request_dir, model_dir)
 
     return "test"

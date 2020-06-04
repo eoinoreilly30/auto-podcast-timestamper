@@ -243,7 +243,6 @@ def vad_segment_generator(wav_data, aggressiveness):
 
 # aggressiveness integer between 0-3
 def transcribe(wavfile_path, model_dir):
-    logging.info('beginning transcription: ' + wavfile_path)
     dir_name = os.path.expanduser(model_dir)
 
     output_graph, scorer = resolve_models(dir_name)
