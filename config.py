@@ -6,4 +6,4 @@ preprocessworkers = '20'
 generateworkers = '4'
 beam = '4'
 aggressiveness = 1  # 0-3
-summarizer_max_characters = 2484
+summarizer_max_characters = 2000

@@ -1,7 +1,4 @@
 from __future__ import division
-
-import math
-
 from flask import Flask, request
 import logging
 import requests
