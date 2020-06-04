@@ -1,10 +1,16 @@
 from __future__ import division
+
+import os
+
+from flask import Flask, request
 import logging
 import sys
 import requests
-from projectsite.timestamper import transcriber, summarizer
+import transcriber
+import summarizer
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+app = Flask(__name__)
 
 
 def download(url, output_filepath):
@@ -17,13 +23,17 @@ def download(url, output_filepath):
 
 
 def transcribe_and_summarize(download_link, request_id, minute_increment=5):
-    audio_filepath = '/dev/shm/' + str(request_id) + '/audio.mp3'
+    request_dir = '/dev/shm/' + request_id + '/'
+    audio_filepath = request_dir + 'audio.mp3'
+    model_dir = "projectsite/timestamper/models/"
+
+    os.makedirs(request_dir, exist_ok=True)
+
     download(download_link, audio_filepath)
 
+    sentences = transcriber.transcribe(audio_filepath, model_dir)
+
     increment = minute_increment * 60
-
-    sentences = transcriber.transcribe(audio_filepath, "projectsite/timestamper/models")
-
     paragraphs = []
     paragraph = ''
     for (timestamp, sentence) in sentences:
@@ -36,6 +46,12 @@ def transcribe_and_summarize(download_link, request_id, minute_increment=5):
 
     summary = []
     for paragraph in paragraphs:
-        summary.append(summarizer.summarize(paragraph, request_id))
+        summary.append(summarizer.summarize(paragraph, request_dir, model_dir))
 
     return summary
+
+
+@app.route('/', methods=['POST'])
+def index():
+    print(request.form['url'])
+    return "test"
