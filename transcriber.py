@@ -242,8 +242,7 @@ def vad_segment_generator(wav_data, aggressiveness):
 
 
 # aggressiveness integer between 0-3
-def transcribe(wavfile_path, model_dir):
-    logging.info('beginning transcription: ' + wavfile_path)
+def transcribe(wavfile_path, model_dir, log_stream):
     dir_name = os.path.expanduser(model_dir)
 
     output_graph, scorer = resolve_models(dir_name)
@@ -256,10 +255,12 @@ def transcribe(wavfile_path, model_dir):
     sentences = []
 
     for i, (segment, timestamp) in enumerate(segment_generator):
+        log_stream.info("Processing chunk %002d" % (i,))
         logging.info("Processing chunk %002d" % (i,))
         segment = np.frombuffer(segment, dtype=np.int16)
         inference, time_taken, segment_length = stt(deepspeech_object, segment, sample_rate)
         logging.debug((timestamp, inference))
+        log_stream.info((timestamp, inference))
         sentences.append((timestamp, inference))
 
     return sentences
