@@ -1,5 +1,4 @@
 import contextlib
-import sys
 import os
 import logging
 import wave
@@ -7,11 +6,10 @@ import numpy as np
 import glob
 import webrtcvad
 import collections
-
 from deepspeech import Model
 from timeit import default_timer as timer
 
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+import config
 
 
 def read_wave(wf):
@@ -244,7 +242,8 @@ def vad_segment_generator(wav_data, aggressiveness):
 
 
 # aggressiveness integer between 0-3
-def transcribe(wavfile_path, model_dir, aggressiveness=1):
+def transcribe(wavfile_path, model_dir):
+    logging.info('beginning transcription: ' + wavfile_path)
     dir_name = os.path.expanduser(model_dir)
 
     output_graph, scorer = resolve_models(dir_name)
@@ -252,12 +251,12 @@ def transcribe(wavfile_path, model_dir, aggressiveness=1):
     deepspeech_object, model_load_time, scorer_load_time = load_model(output_graph, scorer)
 
     with contextlib.closing(wave.open(wavfile_path, 'rb')) as wav_data:
-        segment_generator, sample_rate, audio_length = vad_segment_generator(wav_data, aggressiveness)
+        segment_generator, sample_rate, audio_length = vad_segment_generator(wav_data, config.aggressiveness)
 
     sentences = []
 
     for i, (segment, timestamp) in enumerate(segment_generator):
-        logging.debug("Processing chunk %002d" % (i,))
+        logging.info("Processing chunk %002d" % (i,))
         segment = np.frombuffer(segment, dtype=np.int16)
         inference, time_taken, segment_length = stt(deepspeech_object, segment, sample_rate)
         sentences.append((timestamp, inference))

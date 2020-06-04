@@ -1,11 +1,9 @@
 import logging
+import os
 import subprocess
 import sys
-import os
-
+import config
 from pytorch_transformers import BertTokenizer
-
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 
 def tokenize(input_string, output_file):
@@ -22,17 +20,22 @@ def tokenize(input_string, output_file):
 
 
 def summarize(input_string, request_dir, model_dir):
+    os.makedirs(request_dir, exist_ok=True)
+
     tokenized = request_dir + "tokenized"
-    model = model_dir + "cnndm.pt"
-    lenpen = "0.8"
+    model = model_dir + config.summarizer_model
+    lenpen = config.lenpen
 
     tokenize(input_string, tokenized)
 
     try:
-        return subprocess.check_output(["projectsite/timestamper/summarizer.sh",
+        return subprocess.check_output(["./summarizer.sh",
                                         tokenized,
                                         request_dir,
                                         model,
-                                        lenpen]).decode(sys.stdout.encoding).strip()
+                                        lenpen,
+                                        config.preprocessworkers,
+                                        config.generateworkers,
+                                        config.beam]).decode(sys.stdout.encoding).strip()
     except subprocess.CalledProcessError as e:
         logging.error("exit: " + str(e.returncode) + " output: " + str(e.output))

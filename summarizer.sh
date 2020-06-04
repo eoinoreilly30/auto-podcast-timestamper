@@ -4,8 +4,11 @@ input_prefix=$1
 output_dir=$2
 model=$3
 lenpen=$4
+preprocessworkers=$5
+generateworkers=$6
+beam=$7
 
-prophetnet_path=projectsite/timestamper/prophetnet/
+prophetnet_path=./prophetnet/
 
 fairseq-preprocess \
 --no-progress-bar \
@@ -17,7 +20,7 @@ fairseq-preprocess \
 --destdir "$output_dir" \
 --srcdict "$prophetnet_path/vocab.txt" \
 --tgtdict "$prophetnet_path/vocab.txt" \
---workers 20 \
+--workers "$preprocessworkers" \
 > /dev/null
 
 fairseq-generate "$output_dir" \
@@ -26,8 +29,8 @@ fairseq-generate "$output_dir" \
 --task translation_prophetnet \
 --batch-size 80 \
 --gen-subset test \
---beam 4 \
---num-workers 4 \
+--beam "$beam" \
+--num-workers "$generateworkers" \
 --lenpen "$lenpen" \
 > "$output_dir/unparsed_output.txt"
 

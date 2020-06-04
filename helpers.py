@@ -14,9 +14,8 @@ def get_wav_sample_rate(wav_path):
 
 
 def change_sample_rate(input_file, output_file, new_sample_rate, channels):
-    command = 'ffmpeg -i ' + input_file + \
+    command = 'ffmpeg -loglevel warning -hide_banner -y -i ' + input_file + \
               ' -ar ' + str(new_sample_rate) + \
               ' -ac ' + str(channels) + \
               ' ' + output_file
-    print(command)
     os.system(command)
