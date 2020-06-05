@@ -17,9 +17,14 @@ logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s
 app = Flask(__name__)
 
 
-def exit_stream(log_stream):
+def exit_stream(log_stream, request_dir=''):
     with open(log_stream, 'a') as f:
         f.write("EXIT_CODE")
+    result = subprocess.run(['rm', '-rf', request_dir])
+    if result.returncode == 0:
+        logging.info('Successfully cleaned up')
+    else:
+        logging.error('Error cleaning up')
 
 
 def download(url, output_filepath, log_stream):
@@ -68,8 +73,6 @@ def transcribe_into_paragraphs(wavfile_path, model_dir, minute_increment, log_st
     logging.info('Beginning transcription: ' + wavfile_path)
 
     sentences = transcriber.transcribe(wavfile_path, model_dir, log_stream)
-
-    exit_stream(log_stream)
 
     increment = minute_increment * 60
     paragraphs = []
@@ -132,12 +135,7 @@ def handle_request(download_link, request_id, minute_increment, log_stream):
     with open(log_stream, 'a') as f:
         f.write('\nProcess Finished, please exit\n')
 
-    exit_stream(log_stream)
-
-    result = subprocess.run(['rm', '-rf', request_dir])
-
-    if result.returncode == 0:
-        logging.info('Successfully cleaned up')
+    exit_stream(log_stream, request_dir)
 
     return
 
