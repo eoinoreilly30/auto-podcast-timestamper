@@ -6,6 +6,7 @@ import numpy as np
 import glob
 import webrtcvad
 import collections
+import time
 from deepspeech import Model
 from timeit import default_timer as timer
 
@@ -241,7 +242,6 @@ def vad_segment_generator(wav_data, aggressiveness):
     return segment_generator, sample_rate, audio_length
 
 
-# aggressiveness integer between 0-3
 def transcribe(wavfile_path, model_dir, log_stream):
     dir_name = os.path.expanduser(model_dir)
 
@@ -255,12 +255,19 @@ def transcribe(wavfile_path, model_dir, log_stream):
     sentences = []
 
     for i, (segment, timestamp) in enumerate(segment_generator):
-        log_stream.info("Processing chunk %002d" % (i,))
+        with open(log_stream, 'a') as f:
+            f.write("\nProcessing chunk %002d\n" % (i,))
         logging.info("Processing chunk %002d" % (i,))
+
         segment = np.frombuffer(segment, dtype=np.int16)
         inference, time_taken, segment_length = stt(deepspeech_object, segment, sample_rate)
+
+        with open(log_stream, 'a') as f:
+            tmp_timestamp = time.strftime('%H:%M:%S', time.gmtime(timestamp))
+            f.write('\nTimestamp: ' + str(tmp_timestamp) + '\n')
+            f.write('\n' + inference + '\n')
         logging.debug((timestamp, inference))
-        log_stream.info((timestamp, inference))
+
         sentences.append((timestamp, inference))
 
     return sentences

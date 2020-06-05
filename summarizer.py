@@ -19,7 +19,7 @@ def tokenize(input_string, output_file):
         tgt.write("line")
 
 
-def summarize(input_string, request_dir, model_dir):
+def summarize(input_string, request_dir, model_dir, log_stream):
     os.makedirs(request_dir, exist_ok=True)
 
     tokenized = request_dir + "tokenized"
@@ -37,7 +37,12 @@ def summarize(input_string, request_dir, model_dir):
                                            config.preprocessworkers,
                                            config.generateworkers,
                                            config.beam]).decode(sys.stdout.encoding).strip()
-        logging.debug('summary: ' + summary)
+        summary = summary.replace('[X_SEP]', '')
+
+        with open(log_stream, 'a') as f:
+            f.write('\n' + summary + '\n')
+        logging.debug('Summary: ' + summary)
+
         return summary
     except subprocess.CalledProcessError as e:
         logging.error("exit: " + str(e.returncode) + " output: " + str(e.output))

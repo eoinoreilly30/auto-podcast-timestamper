@@ -36,6 +36,4 @@ fairseq-generate "$output_dir" \
 
 summary=$(grep ^H "$output_dir/unparsed_output.txt" | cut -c 3- | sort -n | cut -f3- | sed "s/ ##//g")
 
-rm -rf "$output_dir"
-
 echo "$summary"
