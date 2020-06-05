@@ -1,5 +1,6 @@
 from __future__ import division
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import subprocess
 import time
 import logging
@@ -15,6 +16,7 @@ import uuid
 logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 
 app = Flask(__name__)
+CORS(app)
 
 
 def exit_stream(log_stream, request_dir=''):
@@ -119,11 +121,11 @@ def handle_request(download_link, request_id, minute_increment, log_stream):
 
     os.makedirs(request_dir, exist_ok=True)
 
-    download(download_link, audio_filepath, log_stream)
-    convert_and_resample(audio_filepath, log_stream)
+    # download(download_link, audio_filepath, log_stream)
+    # convert_and_resample(audio_filepath, log_stream)
 
     wav_filepath = request_dir + 'audio.wav'
-    paragraphs = transcribe_into_paragraphs(wav_filepath, model_dir, minute_increment, log_stream)
+    paragraphs = transcribe_into_paragraphs('audio-examples/joe-voice.wav', model_dir, minute_increment, log_stream)
     summary = summarize(paragraphs, request_dir, model_dir, log_stream)
 
     with open(log_stream, 'a') as f:
@@ -146,7 +148,8 @@ def receive_request():
 
     try:
         download_link = request.json['url']
-        minute_increment = request.json['minute_increment']
+        print(download_link)
+        minute_increment = float(request.json['minute_increment'])
     except KeyError:
         return "Missing parameters", 400
 

@@ -1,0 +1,11 @@
+#output-container {
+   margin-top: 2%;
+}
+
+#output-stream {
+    font-family: Lucida Console;
+    font-size: 11pt;
+    height: 300px;
+    background-color: #FFF !important;
+    resize: none;
+}
