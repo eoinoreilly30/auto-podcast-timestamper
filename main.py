@@ -1,5 +1,6 @@
 from __future__ import division
 from flask import Flask, request, jsonify
+import subprocess
 import time
 import logging
 import requests
@@ -16,6 +17,11 @@ logging.basicConfig(filename='log.log', level=logging.DEBUG, format='%(asctime)s
 app = Flask(__name__)
 
 
+def exit_stream(log_stream):
+    with open(log_stream, 'a') as f:
+        f.write("EXIT_CODE")
+
+
 def download(url, output_filepath, log_stream):
     logging.info("Starting download: " + output_filepath)
     with open(log_stream, 'a') as f:
@@ -28,6 +34,7 @@ def download(url, output_filepath, log_stream):
         logging.error('Invalid url')
         with open(log_stream, 'a') as f:
             f.write('\nInvalid url\n')
+        exit_stream(log_stream)
 
     with open(log_stream, 'a') as f:
         f.write("\nSaving file\n")
@@ -37,12 +44,32 @@ def download(url, output_filepath, log_stream):
         file.write(response.content)
 
 
+def convert_and_resample(audio_filepath, log_stream):
+    basedir = os.path.dirname(audio_filepath) + '/'
+
+    with open(log_stream, 'a') as f:
+        f.write('\nConverting to wav\n')
+    logging.info('Converting to wav: ' + audio_filepath)
+
+    wav_filepath = basedir + 'tmp.wav'
+    helpers.mp3towav(audio_filepath, wav_filepath)
+
+    with open(log_stream, 'a') as f:
+        f.write('\nResampling to 16kHz\n')
+    logging.info('Resampling to 16kHz: ' + audio_filepath)
+
+    resampled_wav_filepath = basedir + 'audio.wav'
+    helpers.change_sample_rate(wav_filepath, resampled_wav_filepath, 16000, 1)
+
+
 def transcribe_into_paragraphs(wavfile_path, model_dir, minute_increment, log_stream):
     with open(log_stream, 'a') as f:
         f.write('\nBeginning transcription\n')
     logging.info('Beginning transcription: ' + wavfile_path)
 
     sentences = transcriber.transcribe(wavfile_path, model_dir, log_stream)
+
+    exit_stream(log_stream)
 
     increment = minute_increment * 60
     paragraphs = []
@@ -82,24 +109,6 @@ def summarize(paragraphs, request_dir, model_dir, log_stream):
     return summary
 
 
-def convert_and_resample(audio_filepath, log_stream):
-    basedir = os.path.dirname(audio_filepath) + '/'
-
-    with open(log_stream, 'a') as f:
-        f.write('\nConverting to wav\n')
-    logging.info('Converting to wav: ' + audio_filepath)
-
-    wav_filepath = basedir + 'tmp.wav'
-    helpers.mp3towav(audio_filepath, wav_filepath)
-
-    with open(log_stream, 'a') as f:
-        f.write('\nResampling to 16kHz\n')
-    logging.info('Resampling to 16kHz: ' + audio_filepath)
-
-    resampled_wav_filepath = basedir + 'audio.wav'
-    helpers.change_sample_rate(wav_filepath, resampled_wav_filepath, 16000, 1)
-
-
 def handle_request(download_link, request_id, minute_increment, log_stream):
     request_dir = config.root_dir + request_id + '/'
     audio_filepath = request_dir + 'audio.mp3'
@@ -117,8 +126,18 @@ def handle_request(download_link, request_id, minute_increment, log_stream):
     with open(log_stream, 'a') as f:
         f.write('\nFull Summary:\n')
         for idx, line in enumerate(summary):
-            f.write('\n%.2f-%.2f\n' % (idx*minute_increment, (idx+1)*minute_increment))
+            f.write('\n%.2f-%.2f\n' % (idx * minute_increment, (idx + 1) * minute_increment))
             f.write('\n' + line + '\n')
+
+    with open(log_stream, 'a') as f:
+        f.write('\nProcess Finished, please exit\n')
+
+    exit_stream(log_stream)
+
+    result = subprocess.run(['rm', '-rf', request_dir])
+
+    if result.returncode == 0:
+        logging.info('Successfully cleaned up')
 
     return
 
@@ -153,9 +172,13 @@ def stream(request_id):
         return "Stream not found", 404
 
     def generate():
-        with open(stream_filepath) as f:
+        with open(stream_filepath, 'r') as f:
             while True:
-                yield f.read()
+                line = str(f.read())
+                if line == 'EXIT_CODE':
+                    raise StopIteration
+                else:
+                    yield line
                 time.sleep(1)
 
     return app.response_class(generate(), mimetype='text/plain')
