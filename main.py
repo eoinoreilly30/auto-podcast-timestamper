@@ -148,7 +148,6 @@ def receive_request():
 
     try:
         download_link = request.json['url']
-        print(download_link)
         minute_increment = float(request.json['minute_increment'])
     except KeyError:
         return "Missing parameters", 400
