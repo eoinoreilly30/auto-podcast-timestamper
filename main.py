@@ -58,15 +58,15 @@ def convert_and_resample(audio_filepath, log_stream):
         f.write('\nConverting to wav\n')
     logging.info('Converting to wav: ' + audio_filepath)
 
-    wav_filepath = basedir + 'tmp.wav'
+    wav_filepath = basedir + 'audio.wav'
     helpers.mp3towav(audio_filepath, wav_filepath)
 
-    with open(log_stream, 'a') as f:
-        f.write('\nResampling to 16kHz\n')
-    logging.info('Resampling to 16kHz: ' + audio_filepath)
-
-    resampled_wav_filepath = basedir + 'audio.wav'
-    helpers.change_sample_rate(wav_filepath, resampled_wav_filepath, 16000, 1)
+    # with open(log_stream, 'a') as f:
+    #     f.write('\nResampling to 16kHz\n')
+    # logging.info('Resampling to 16kHz: ' + audio_filepath)
+    #
+    # resampled_wav_filepath = basedir + 'audio.wav'
+    # helpers.change_sample_rate(wav_filepath, resampled_wav_filepath, 16000, 1)
 
 
 def transcribe_into_paragraphs(wavfile_path, model_dir, minute_increment, log_stream):
@@ -121,10 +121,12 @@ def handle_request(download_link, request_id, minute_increment, log_stream):
 
     os.makedirs(request_dir, exist_ok=True)
 
-    download(download_link, audio_filepath, log_stream)
-    convert_and_resample(audio_filepath, log_stream)
+    # download(download_link, audio_filepath, log_stream)
+    # audio_filepath
+    convert_and_resample('audio-examples/blindboy.mp3', log_stream)
 
-    wav_filepath = request_dir + 'audio.wav'
+    # request_dir
+    wav_filepath = 'audio-examples/' + 'audio.wav'
     paragraphs = transcribe_into_paragraphs(wav_filepath, model_dir, minute_increment, log_stream)
     summary = summarize(paragraphs, request_dir, model_dir, log_stream)
 

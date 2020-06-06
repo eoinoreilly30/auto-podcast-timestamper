@@ -1,11 +1,12 @@
 import os
+import subprocess
 import wave
-from pydub import AudioSegment
 
 
 def mp3towav(mp3_path, wav_path):
-    sound = AudioSegment.from_mp3(mp3_path)
-    sound.export(wav_path, format="wav")
+    subprocess.run(
+        ['ffmpeg', '-loglevel', 'warning', '-hide_banner', '-y', '-i', mp3_path, '-acodec', 'pcm_s16le', '-ac', '1',
+         '-ar', '16000', wav_path])
 
 
 def get_wav_sample_rate(wav_path):

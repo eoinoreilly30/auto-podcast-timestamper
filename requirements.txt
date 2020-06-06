@@ -18,11 +18,9 @@ jmespath==0.10.0
 joblib==0.15.1
 MarkupSafe==1.1.1
 numpy==1.18.4
-Pillow==7.1.2
 pip-autoremove==0.9.1
 portalocker==1.7.0
 pycparser==2.20
-pydub==0.24.0
 python-dateutil==2.8.1
 python-dotenv==0.13.0
 pytorch-transformers==1.2.0
@@ -34,7 +32,6 @@ sacremoses==0.0.43
 sentencepiece==0.1.91
 six==1.15.0
 torch==1.5.0+cpu
-torchvision==0.6.0+cpu
 tqdm==4.46.0
 typing==3.7.4.1
 urllib3==1.25.9
