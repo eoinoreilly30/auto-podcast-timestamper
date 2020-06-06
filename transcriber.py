@@ -264,7 +264,7 @@ def transcribe(wavfile_path, model_dir, log_stream):
 
         with open(log_stream, 'a') as f:
             tmp_timestamp = time.strftime('%H:%M:%S', time.gmtime(timestamp))
-            f.write('\nTimestamp: ' + str(tmp_timestamp) + '\n')
+            f.write('\nTranscription @ ' + str(tmp_timestamp) + '\n')
             f.write('\n' + inference + '\n')
         logging.debug((timestamp, inference))
 

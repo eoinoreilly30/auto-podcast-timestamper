@@ -183,3 +183,8 @@ def stream(request_id):
                 time.sleep(1)
 
     return app.response_class(generate(), mimetype='text/plain')
+
+
+@app.route('/', methods=['GET'])
+def index():
+    return "Welcome to the Auto Podcast Timestamper API\n"
