@@ -30,7 +30,7 @@ def exit_stream(log_stream, request_dir=''):
 
 
 def download(url, output_filepath, log_stream):
-    logging.info("Starting download: " + output_filepath)
+    logging.info("Starting download: " + url)
     with open(log_stream, 'a') as f:
         f.write("\nStarting download\n")
 
