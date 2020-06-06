@@ -121,12 +121,10 @@ def handle_request(download_link, request_id, minute_increment, log_stream):
 
     os.makedirs(request_dir, exist_ok=True)
 
-    # download(download_link, audio_filepath, log_stream)
-    # audio_filepath
-    convert_and_resample('audio-examples/blindboy.mp3', log_stream)
+    download(download_link, audio_filepath, log_stream)
+    convert_and_resample(audio_filepath, log_stream)
 
-    # request_dir
-    wav_filepath = 'audio-examples/' + 'audio.wav'
+    wav_filepath = request_dir + 'audio.wav'
     paragraphs = transcribe_into_paragraphs(wav_filepath, model_dir, minute_increment, log_stream)
     summary = summarize(paragraphs, request_dir, model_dir, log_stream)
 
