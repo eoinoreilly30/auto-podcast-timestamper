@@ -11,6 +11,7 @@ Uses:
 - ```pip install torch==1.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html```
 - ```pip install -r requirements.txt```
 #### Download models
+- ```mkdir models/```
 - ```curl -L https://github.com/mozilla/DeepSpeech/releases/download/v0.7.3/deepspeech-0.7.3-models.pbmm --output models/deepspeech-0.7.3-models.pbmm```
 - ```curl -L https://github.com/mozilla/DeepSpeech/releases/download/v0.7.3/deepspeech-0.7.3-models.scorer --output models/deepspeech-0.7.3-models.scorer```
 - ```python download_models.py```
