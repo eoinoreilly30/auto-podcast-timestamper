@@ -7,7 +7,7 @@ Uses:
 
 ## Installation
 - ```sudo apt install sox ffmpeg```
-#### Install whatever version of pytorch suits your system
+#### Install whatever version of PyTorch suits your system
 - ```pip install torch==1.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html```
 - ```pip install -r requirements.txt```
 #### Download models
@@ -15,3 +15,27 @@ Uses:
 - ```curl -L https://github.com/mozilla/DeepSpeech/releases/download/v0.7.3/deepspeech-0.7.3-models.pbmm --output models/deepspeech-0.7.3-models.pbmm```
 - ```curl -L https://github.com/mozilla/DeepSpeech/releases/download/v0.7.3/deepspeech-0.7.3-models.scorer --output models/deepspeech-0.7.3-models.scorer```
 - ```python download_models.py```
+
+## Usage
+Run as Flask API
+- ```export FLASK_APP=main.py```
+- ```flask run```
+
+## API
+#### Request
+```POST /request```
+
+```curl -X POST -d '{"url": "<URL>", "minute_increment": "<INT>"}' -H 'Content-Type: application/json' http://localhost:5000/request```
+
+Response
+
+```"{request_id: <UUID>}"```
+
+#### Stream the response back
+```GET /stream/<request-id>```
+
+```curl -X GET http://localhost:5000/stream/<request-id>```
+
+Response
+
+```Either let it stream to your terminal or handle with JS Stream API```
