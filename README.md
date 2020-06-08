@@ -1,6 +1,8 @@
 # Auto Podcast Timestamper
 A service that gives timestamped highlights of an audio clip
 
+Frontend hosted @ [eoinor.xyz](https://eoinor.xyz/auto-podcast-timestamper)
+
 Uses:
 - [Mozilla DeepSpeech](https://github.com/mozilla/DeepSpeech) for VAD and speech-to-text translation
 - [Microsoft ProphetNet](https://github.com/microsoft/prophetnet) for text summarization
@@ -24,6 +26,10 @@ Run as Flask API
 ## API
 #### Request
 ```POST /request```
+
+Parameters:
+- url: A download URL from Acast for the podcast
+- minute_increment: How often to timestamp
 
 ```curl -X POST -d '{"url": "<URL>", "minute_increment": "<INT>"}' -H 'Content-Type: application/json' http://localhost:5000/request```
 
