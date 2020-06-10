@@ -22,7 +22,7 @@ CORS(app)
 def exit_stream(log_stream, request_dir=''):
     with open(log_stream, 'a') as f:
         f.write("EXIT_CODE")
-    result = subprocess.run(['rm', '-rf', request_dir])
+    result = subprocess.run(['/usr/bin/rm', '-rf', request_dir])
     if result.returncode == 0:
         logging.info('Successfully cleaned up')
     else:
