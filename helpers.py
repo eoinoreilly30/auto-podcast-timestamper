@@ -5,7 +5,7 @@ import wave
 
 def mp3towav(mp3_path, wav_path):
     subprocess.run(
-        ['ffmpeg', '-loglevel', 'warning', '-hide_banner', '-y', '-i', mp3_path, '-acodec', 'pcm_s16le', '-ac', '1',
+        ['/usr/bin/ffmpeg', '-loglevel', 'warning', '-hide_banner', '-y', '-i', mp3_path, '-acodec', 'pcm_s16le', '-ac', '1',
          '-ar', '16000', wav_path])
 
 
