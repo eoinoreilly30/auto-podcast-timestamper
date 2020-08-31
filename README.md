@@ -3,7 +3,7 @@ A service that gives timestamped highlights of an audio clip
 
 Frontend hosted @ [eoinor.xyz](https://eoinor.xyz/auto-podcast-timestamper)
 
-API @ [autotimestamper.xyz](https://autotimestamper.xyz)
+API @ [autotimestamper.xyz](https://autotimestamper.xyz) currently down
 
 Uses:
 - [Mozilla DeepSpeech](https://github.com/mozilla/DeepSpeech) for VAD and speech-to-text translation
