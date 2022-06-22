@@ -17,7 +17,7 @@ Jinja2==2.11.2
 jmespath==0.10.0
 joblib==0.15.1
 MarkupSafe==1.1.1
-numpy==1.18.4
+numpy==1.22.0
 pip-autoremove==0.9.1
 portalocker==1.7.0
 pycparser==2.20
